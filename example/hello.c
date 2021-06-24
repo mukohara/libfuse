@@ -55,6 +55,7 @@ static const struct fuse_opt option_spec[] = {
 static void *hello_init(struct fuse_conn_info *conn,
 			struct fuse_config *cfg)
 {
+printf("init\n");
 	(void) conn;
 	cfg->kernel_cache = 1;
 	return NULL;
@@ -63,6 +64,7 @@ static void *hello_init(struct fuse_conn_info *conn,
 static int hello_getattr(const char *path, struct stat *stbuf,
 			 struct fuse_file_info *fi)
 {
+	printf("getattr\n");
 	(void) fi;
 	int res = 0;
 
@@ -84,6 +86,7 @@ static int hello_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
 			 off_t offset, struct fuse_file_info *fi,
 			 enum fuse_readdir_flags flags)
 {
+printf("readdir\n");
 	(void) offset;
 	(void) fi;
 	(void) flags;
@@ -100,6 +103,7 @@ static int hello_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
 
 static int hello_open(const char *path, struct fuse_file_info *fi)
 {
+printf("open\n");
 	if (strcmp(path+1, options.filename) != 0)
 		return -ENOENT;
 
@@ -112,6 +116,7 @@ static int hello_open(const char *path, struct fuse_file_info *fi)
 static int hello_read(const char *path, char *buf, size_t size, off_t offset,
 		      struct fuse_file_info *fi)
 {
+printf("read\n");
 	size_t len;
 	(void) fi;
 	if(strcmp(path+1, options.filename) != 0)
@@ -138,6 +143,7 @@ static const struct fuse_operations hello_oper = {
 
 static void show_help(const char *progname)
 {
+printf("show_help\n");
 	printf("usage: %s [options] <mountpoint>\n\n", progname);
 	printf("File-system specific options:\n"
 	       "    --name=<s>          Name of the \"hello\" file\n"
@@ -149,6 +155,7 @@ static void show_help(const char *progname)
 
 int main(int argc, char *argv[])
 {
+printf("b1\n");
 	int ret;
 	struct fuse_args args = FUSE_ARGS_INIT(argc, argv);
 
@@ -157,11 +164,11 @@ int main(int argc, char *argv[])
 	   values are specified */
 	options.filename = strdup("hello");
 	options.contents = strdup("Hello World!\n");
-
+printf("b2\n");
 	/* Parse options */
 	if (fuse_opt_parse(&args, &options, option_spec, NULL) == -1)
 		return 1;
-
+printf("b3\n");
 	/* When --help is specified, first print our own file-system
 	   specific help text, then signal fuse_main to show
 	   additional help (by adding `--help` to the options again)
