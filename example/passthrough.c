@@ -60,20 +60,18 @@
 #include "passthrough_helpers.h"
 
 static int fill_dir_plus = 0;
+FILE *fp;
 
 void write_log(char *func_name)
 {
 	struct timeval myTime;
 	char date[64];
-	FILE *fp;
-	fp = fopen("/git/libfuse/example/access.log", "a");
 
 	gettimeofday(&myTime, NULL);
 	strftime(date, sizeof(date), "%Y-%m-%d,%a,%H:%M:%S", localtime(&myTime.tv_sec));
-	printf("%s,%s.%06ld\n",func_name, date, myTime.tv_usec);
-	fprintf(fp, "%s %s\n", func_name, date);
-
-	fclose(fp);
+//	printf("%s,%s.%06ld\n",func_name, date, myTime.tv_usec);
+	fprintf(fp, "%s %s.%06ld\n", func_name, date, myTime.tv_usec);
+	fflush(fp);
 }
 
 static void *xmp_init(struct fuse_conn_info *conn,
@@ -602,6 +600,7 @@ static const struct fuse_operations xmp_oper = {
 
 int main(int argc, char *argv[])
 {
+	fp = fopen("access.log", "a");
 	enum { MAX_ARGS = 10 };
 	int i,new_argc;
 	char *new_argv[MAX_ARGS];
@@ -614,5 +613,8 @@ int main(int argc, char *argv[])
 			new_argv[new_argc++] = argv[i];
 		}
 	}
-	return fuse_main(new_argc, new_argv, &xmp_oper, NULL);
+//	return fuse_main(new_argc, new_argv, &xmp_oper, NULL);
+	fuse_main(new_argc, new_argv, &xmp_oper, NULL);
+	fclose(fp);
+	return 0;
 }
